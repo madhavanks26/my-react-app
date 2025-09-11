@@ -10,5 +10,5 @@ function App() {
     </div>
   );
 }
-
+// default export
 export default App;

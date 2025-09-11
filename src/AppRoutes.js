@@ -7,7 +7,7 @@ import NoPage from './pages/nopage';
 
 const AppRoutes = () => {
     return (
-        <header className="App-header">
+        
         <BrowserRouter>
         <Routes>
               <Route path="/" element={<Home />}/>
@@ -18,7 +18,7 @@ const AppRoutes = () => {
               <Route path="*" element={<NoPage />} />        
         </Routes>
         </BrowserRouter>
-      </header>
+      
     )
 }
 

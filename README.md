@@ -68,3 +68,15 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+#11-SEP2025
+Added gitignore and ran the below cmds
+touch .gitignore
+
+node_modules/
+build/
+.env
+.DS_Store
+git rm -r --cached node_modules
+commit #hash code : 9e4d925a3a3f5be087aa60ae62a24b0dd71e83d2

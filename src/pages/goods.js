@@ -221,8 +221,8 @@ const Goods = () => {
                                 name="goodsSize"
                                 value={good.goodsSize}
                                 onChange={(e) => handleChange(e, index)}
-                                pattern='[a-zA-Z0-9"]+'
-                                title='Only letters, numbers, and " allowed'
+                                pattern='^\d{1,2}[X]\d{1,2}$'
+                                title='Allowed numeric single or double digit and letter X with format as 3X3 or 12X12'
                                 placeholder="Enter your good size"
                                 required
                               />

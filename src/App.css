@@ -38,3 +38,7 @@
 }
 
 .modal-title{ color:green;}
+
+.hoverPencil:hover,.hoverTrash:hover{cursor: pointer;}
+.UDIcons{list-style: none;}
+.UDIcons li{display:inline-block;padding-left: 10px;}

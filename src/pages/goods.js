@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { addGoods } from "../util/api";
-import { showSuccessAlert, showFailureAlert } from "../util/alert";
+import { listGoods, addGoods, deleteGood } from "../util/api";
+import {
+  showConfirmationAlert,
+  showSuccessAlert,
+  showFailureAlert,
+} from "../util/alert";
 
 const Goods = () => {
   const [posts, setPosts] = useState([]);
@@ -28,7 +32,15 @@ const Goods = () => {
       qtySold: "0",
     },
   ]);
-
+  const displayGoods = async () => {
+    try {
+      const listGoodsResponse = await listGoods();
+      console.log(listGoodsResponse);
+      setPosts(listGoodsResponse.data[0]);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedGoods = [...goodsFormData];
@@ -42,17 +54,6 @@ const Goods = () => {
       console.log(JSON.stringify(goodsFormData));
       const response = await addGoods(goodsFormData);
       console.log(response.data);
-      // const res = await fetch("/addGoods", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify([goodsFormData]),
-      // })
-
-      // const data = await res.json();
-      // console.log(data);
-      // setResponse(data);
       showSuccessAlert("Goods Added Successfully");
     } catch (error) {
       console.error("Status:", error.response?.status);
@@ -67,17 +68,38 @@ const Goods = () => {
       showFailureAlert(html);
     }
   };
-
+  const deleteGoodByID =  (value) => {
+    console.log(value);
+    const deleteGoodId = { goodsId: value };
+    showConfirmationAlert(value,function(responseOfConfirmation){
+      try {
+      
+      console.log(responseOfConfirmation);
+      if (responseOfConfirmation) {
+        const deleteAPIResponse = deleteGood(deleteGoodId);
+        console.log(deleteAPIResponse.data);
+        showSuccessAlert(
+          `Good with ID ${value} deleted Successfully`,
+        );
+        displayGoods();
+      }
+    } catch (error) {
+      console.error("Status:", error.response?.status);
+      console.error("Message:", error.response?.data?.error);
+      //alert("Failed to submit form");
+      const html =
+        "<h3>" +
+        error.response?.status +
+        "</h3><br/><h4>" +
+        error.response?.data?.error +
+        "</h4>";
+      showFailureAlert(html);
+    }
+    });
+    
+  };
   useEffect(() => {
-    axios
-      .get("/listGoods")
-      .then((response) => {
-        console.log(response);
-        setPosts(response.data[0]);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+    displayGoods();
   }, []);
 
   return (
@@ -119,9 +141,17 @@ const Goods = () => {
                     {post["goodsUnitOfMeasurement"]}
                   </td>
                   <td>
-                    <i className="bi bi-pencil"></i>&nbsp;
-                    {/* <p>{post['goodsId']}</p> */}
-                    <i className="bi bi-trash"></i>
+                    <ul className="UDIcons">
+                      <li className="hoverPencil">
+                        <i className="bi bi-pencil"></i>
+                      </li>
+                      <li
+                        className="hoverTrash"
+                        onClick={() => deleteGoodByID(post.goodsId)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </li>
+                    </ul>
                   </td>
                 </tr>
               ))}
@@ -171,16 +201,19 @@ const Goods = () => {
                                 id="goodsName"
                                 name="goodsName"
                                 onChange={(e) => handleChange(e, index)}
+                                defaultValue=""
                                 placeholder="Enter your good name"
-                                required>
-                                  <option value="" disabled selected>Select Goods Name</option>
+                                required
+                              >
+                                <option value="" disabled>
+                                  Select Goods Name
+                                </option>
                                 {goodsNameOptions.map((opt) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                   </option>
                                 ))}
-                                </select>
-                              
+                              </select>
                             </div>
                           </div>
                           <div className="col-sm-6">
@@ -193,18 +226,20 @@ const Goods = () => {
                                 className="form-control"
                                 id="goodsBrand"
                                 name="goodsBrand"
-                                value={good.goodsBrand}
+                                defaultValue=""
                                 onChange={(e) => handleChange(e, index)}
                                 placeholder="Enter your good brand name"
                                 required
                               >
-                                <option value="" disabled selected>Select Goods Brand</option>
+                                <option value="" disabled>
+                                  Select Goods Brand
+                                </option>
                                 {goodsBrandOptions.map((opt) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                   </option>
                                 ))}
-                              </select>                              
+                              </select>
                             </div>
                           </div>
                         </div>
@@ -221,8 +256,8 @@ const Goods = () => {
                                 name="goodsSize"
                                 value={good.goodsSize}
                                 onChange={(e) => handleChange(e, index)}
-                                pattern='^\d{1,2}[X]\d{1,2}$'
-                                title='Allowed numeric single or double digit and letter X with format as 3X3 or 12X12'
+                                pattern="^\d{1,2}[X]\d{1,2}$"
+                                title="Allowed numeric single or double digit and letter X with format as 3X3 or 12X12"
                                 placeholder="Enter your good size"
                                 required
                               />

@@ -7,4 +7,6 @@ const API = axios.create({
   }    
 })
 
+export const listGoods =() => API.get('listGoods');
 export const addGoods =(addGoodsData) =>API.post('addGoods',addGoodsData);
+export const deleteGood =(deleteGoodData) =>API.post('deleteGood',deleteGoodData);

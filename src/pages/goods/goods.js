@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { listGoods, addGoods, deleteGood } from "../util/api";
-import {
-  showConfirmationAlert,
-  showSuccessAlert,
-  showFailureAlert,
-} from "../util/alert";
+import { listGoods, addGoods, deleteGood } from "../../util/api";
+import { showConfirmationAlert, showSuccessAlert, showFailureAlert,} from "../../util/alert";
+import { useGoodsActions } from "./usegoodsActions";
 
 const Goods = () => {
-  const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
+  const {posts,error,displayGoods} = useGoodsActions();  
   const [selected, setSelected] = useState(""); // selected value
+  const [isOpen, setIsOpen] = useState(false);
   const [goodsNameOptions, setgoodsNameOptions] = useState([
     { value: "PP COVER", label: "PP COVER" },
     { value: "MUDICHU COVER", label: "MUDICHU COVER" },
@@ -32,21 +28,20 @@ const Goods = () => {
       qtySold: "0",
     },
   ]);
-  const displayGoods = async () => {
-    try {
-      const listGoodsResponse = await listGoods();
-      console.log(listGoodsResponse);
-      setPosts(listGoodsResponse.data[0]);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedGoods = [...goodsFormData];
     updatedGoods[index][name] = value;
     setFormData(updatedGoods);
   };
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => {
+    setIsOpen(false);
+    document.getElementById("modalForm").classList.remove("show", "d-block");
+    document.querySelectorAll(".modal-backdrop")
+            .forEach(el => el.classList.remove("modal-backdrop"));
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -55,6 +50,8 @@ const Goods = () => {
       const response = await addGoods(goodsFormData);
       console.log(response.data);
       showSuccessAlert("Goods Added Successfully");
+      displayGoods();
+      closeModal();
     } catch (error) {
       console.error("Status:", error.response?.status);
       console.error("Message:", error.response?.data?.error);
@@ -163,10 +160,12 @@ const Goods = () => {
               data-bs-toggle="modal"
               data-bs-target="#formModal"
               className="bi bi-plus-circle"
+              onClick={openModal}
             ></i>
           </div>
           <div
-            className="modal modal-lg"
+            className={`modal modal-lg ${isOpen ? 'show':''}`}
+            style={{display:`${isOpen ? 'block':'none'}`}}
             id="formModal"
             tabIndex="-1"
             aria-labelledby="formModalLabel"

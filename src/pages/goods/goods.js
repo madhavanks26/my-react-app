@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { listGoods, addGoods, deleteGood } from "../../util/api";
-import { showConfirmationAlert, showSuccessAlert, showFailureAlert,} from "../../util/alert";
+import {
+  showConfirmationAlert,
+  showSuccessAlert,
+  showFailureAlert,
+} from "../../util/alert";
 import { useGoodsActions } from "./usegoodsActions";
 
 const Goods = () => {
-  const {posts,error,displayGoods} = useGoodsActions();  
+  const { posts, error, displayGoods, deleteGoodByID } = useGoodsActions();
   const [selected, setSelected] = useState(""); // selected value
   const [isOpen, setIsOpen] = useState(false);
   const [goodsNameOptions, setgoodsNameOptions] = useState([
@@ -28,7 +32,7 @@ const Goods = () => {
       qtySold: "0",
     },
   ]);
-  
+
   const handleChange = (e, index) => {
     const { name, value } = e.target;
     const updatedGoods = [...goodsFormData];
@@ -39,9 +43,10 @@ const Goods = () => {
   const closeModal = () => {
     setIsOpen(false);
     document.getElementById("modalForm").classList.remove("show", "d-block");
-    document.querySelectorAll(".modal-backdrop")
-            .forEach(el => el.classList.remove("modal-backdrop"));
-  }
+    document
+      .querySelectorAll(".modal-backdrop")
+      .forEach((el) => el.classList.remove("modal-backdrop"));
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,36 +70,7 @@ const Goods = () => {
       showFailureAlert(html);
     }
   };
-  const deleteGoodByID =  (value) => {
-    console.log(value);
-    const deleteGoodId = { goodsId: value };
-    showConfirmationAlert(value,function(responseOfConfirmation){
-      try {
-      
-      console.log(responseOfConfirmation);
-      if (responseOfConfirmation) {
-        const deleteAPIResponse = deleteGood(deleteGoodId);
-        console.log(deleteAPIResponse.data);
-        showSuccessAlert(
-          `Good with ID ${value} deleted Successfully`,
-        );
-        displayGoods();
-      }
-    } catch (error) {
-      console.error("Status:", error.response?.status);
-      console.error("Message:", error.response?.data?.error);
-      //alert("Failed to submit form");
-      const html =
-        "<h3>" +
-        error.response?.status +
-        "</h3><br/><h4>" +
-        error.response?.data?.error +
-        "</h4>";
-      showFailureAlert(html);
-    }
-    });
-    
-  };
+
   useEffect(() => {
     displayGoods();
   }, []);
@@ -164,8 +140,8 @@ const Goods = () => {
             ></i>
           </div>
           <div
-            className={`modal modal-lg ${isOpen ? 'show':''}`}
-            style={{display:`${isOpen ? 'block':'none'}`}}
+            className={`modal modal-lg ${isOpen ? "show" : ""}`}
+            style={{ display: `${isOpen ? "block" : "none"}` }}
             id="formModal"
             tabIndex="-1"
             aria-labelledby="formModalLabel"
